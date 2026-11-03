@@ -60,7 +60,7 @@ tune_xgb <- function(Ctr, y, depths = c(2, 4, 6)) {
   list(max_depth = depths[best], nrounds = unname(res["rounds", best]))
 }
 
-# ------------------------------------------------------------------ data
+#  -- data
 raw <- read.csv(if (file.exists("nhefs.csv")) "nhefs.csv" else "nhefs_complete.csv")
 d <- raw %>%
   filter(!is.na(wt82), smokeintensity <= 25) %>%
@@ -113,12 +113,12 @@ est <- function(m, h) {
 learners <- c("OLS", "GAM", "XGBoost", "XGBoost-tuned")
 S <- 20     # number of random 5-fold splits for cross-fitting
 
-# ------------------------------------------------------------------ full-sample fits
+#  -- full-sample fits
 full <- lapply(learners, function(L) learn(L, seq_len(n), seq_len(n)))
 names(full) <- learners
 full_est <- t(sapply(full, function(f) est(f$m, f$h)))
 
-# ------------------------------------------------------------------ cross-fitted fits
+#  -- cross-fitted fits
 cf <- lapply(learners, function(L) {
   lapply(seq_len(S), function(s) {
     fold <- sample(rep(1:5, length.out = n))
@@ -143,7 +143,7 @@ agg <- function(runs) {   # median aggregation over splits (Chernozhukov et al. 
 }
 cf_est <- t(sapply(cf, agg))
 
-# ------------------------------------------------------------------ diagnostics
+#  -- diagnostics
 # reference learner B = cross-fitted XGBoost; average its predictions over splits
 mB <- rowMeans(sapply(cf$XGBoost, `[[`, "m"))
 hB <- rowMeans(sapply(cf$XGBoost, `[[`, "h"))
