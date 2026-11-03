@@ -47,7 +47,7 @@ s2x <- cfg$sigma_x^2 + cfg$u_load^2   # Var(X | C), used in the remainder
 out_dir <- "v4_output"
 dir.create(out_dir, showWarnings = FALSE)
 
-# ---------------------------------------------------------------- XGBoost
+#  XGBoost
 XGB_BACKEND <- Sys.getenv("XGB_BACKEND", "R")
 
 if (XGB_BACKEND == "python") {
@@ -107,7 +107,7 @@ tune_xgb <- function(Ctr, y, depths = c(2, 4, 6)) {
   list(max_depth = depths[best], nrounds = res["rounds", best], cv_mse = res["cv_mse", best])
 }
 
-# ---------------------------------------------------------------- DGP
+#   DGP
 make_covariates <- function(n) {
   Sigma <- matrix(rho, p, p); diag(Sigma) <- 1
   C <- matrix(rnorm(n * p), n, p) %*% chol(Sigma)
@@ -128,7 +128,7 @@ generate_data <- function(n) {
   list(C = C, X = X, Y = Y, m0 = m0, h0 = tauC * m0 + g0)   # h0 = E(Y | C)
 }
 
-# ---------------------------------------------------------------- estimator
+#   estimator
 estimate_tau <- function(X, Y, m_hat, h_hat) {
   xr <- X - m_hat; yr <- Y - h_hat
   tau <- sum(xr * yr) / sum(xr^2)
@@ -146,7 +146,7 @@ prediction_metrics <- function(pred_m, pred_h, true_m, true_h) {
     cross = mean(dm * dh), D_joint = abs(mean(dm * dh)), R = mean(dm * dg))
 }
 
-# ---------------------------------------------------------------- learners
+#   learners
 fit_ols <- function(tr, newC) {
   dfm <- data.frame(X = tr$X, tr$C); dfh <- data.frame(Y = tr$Y, tr$C); nd <- data.frame(newC)
   list(m = as.numeric(predict(lm(X ~ ., dfm), nd)), h = as.numeric(predict(lm(Y ~ ., dfh), nd)))
@@ -207,7 +207,7 @@ make_row <- function(method, met, fit, extra = list()) {
 
 zero_met <- c(E_m = 0, E_h = 0, E_g = 0, cross = 0, D_joint = 0, R = 0)
 
-# ---------------------------------------------------------------- one replicate
+#   one replicate
 run_one <- function(seed) {
   set.seed(seed)
   train <- generate_data(n_train)
@@ -259,7 +259,7 @@ run_one <- function(seed) {
   bind_rows(rows)
 }
 
-# ---------------------------------------------------------------- run
+#   run
 ckpt <- file.path(out_dir, paste0(scen, "_checkpoint.rds"))
 results_list <- if (file.exists(ckpt)) readRDS(ckpt) else list()
 start <- length(results_list) + 1
