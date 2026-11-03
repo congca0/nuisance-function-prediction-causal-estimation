@@ -55,7 +55,7 @@ summ <- res %>%
 write.csv(summ, file.path(dir, "v3_numbers_for_text.csv"), row.names = FALSE)
 print(as.data.frame(summ), digits = 4)
 
-# ---- Table 1 (LaTeX, booktabs) ----
+#  Table 1 (LaTeX, booktabs)  
 f4 <- function(x) sprintf("%.4f", x)
 f3 <- function(x) sprintf("%.3f", x)
 rows <- with(summ, sprintf("%s & %-11s & %7s & %s & %s & %s & %s & %s \\\\",
@@ -97,7 +97,7 @@ tex <- c(
 )
 writeLines(tex, file.path(dir, "table1.tex"))
 
-# ---- Table 2 (LaTeX): prediction error, remainder-predicted bias, observed bias ----
+#   Table 2 (LaTeX): prediction error, remainder-predicted bias, observed bias  
 f2 <- function(x) sprintf("%.2f", x)
 t2 <- summ %>% filter(method != "Oracle")
 rows2 <- with(t2, sprintf("%s & %-11s & %s & %s & %s & %s & %s & %s & %s & %s \\\\",
@@ -139,7 +139,7 @@ tex2 <- c(
 )
 writeLines(tex2, file.path(dir, "table2.tex"))
 
-# ---- v4: Table 3, ranks (1 = best) among the non-oracle methods ----
+#   v4: Table 3, ranks (1 = best) among the non-oracle methods  
 t3 <- summ %>% filter(method != "Oracle") %>% group_by(Scenario) %>%
   mutate(rk_Em = rank(E_m), rk_Eh = rank(E_h), rk_tot = rank(E_m + E_h),
          rk_bias = rank(abs(Bias)), rk_rmse = rank(RMSE),
@@ -147,7 +147,7 @@ t3 <- summ %>% filter(method != "Oracle") %>% group_by(Scenario) %>%
 print(as.data.frame(t3[, c("Scenario", "method", "rk_Em", "rk_Eh", "rk_tot",
                            "rk_bias", "rk_rmse", "rk_cov")]))
 
-# ---- Figures (same file names as in the manuscript) ----
+#   Figures (same file names as in the manuscript)  
 plot_dat <- res %>%
   filter(method != "Oracle") %>%
   mutate(method = factor(method, levels = method_order[-1]),
